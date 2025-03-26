@@ -11,7 +11,7 @@ import (
 
 type Config struct {
 	Env       string `yaml:"env" env:"ENV" env-default:"local" env-required:"true"`
-	Storage   string `yaml:"storage_path" env-required:"true"`
+	StoragePath   string `yaml:"storage_path" env-required:"true"`
 	HTTPServer HTTPServer `yaml:"http_server"`
 }
 
@@ -22,7 +22,7 @@ type HTTPServer struct {
 }
 
 func MustLoad() *Config {
-	err := godotenv.Load()		
+	err := godotenv.Load("../../.env")		
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}

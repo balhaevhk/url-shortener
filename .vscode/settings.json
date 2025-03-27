@@ -1,3 +1,4 @@
 {
-  "dbcode.connections": []
+  // Объект JSON, содержащий конфигурационные данные
+  "dbcode.connections": [] // Ключ "dbcode.connections" хранит массив подключений к базе данных (пока пустой)
 }

@@ -17,7 +17,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-
 // New - функция, которая возвращает middleware для логирования HTTP-запросов.
 // Входной параметр log - это уже настроенный логгер (slog.Logger).
 // Функция создает новый обработчик запросов, который будет логировать информацию о запросах и их ответах.
@@ -57,8 +56,8 @@ func New(log *slog.Logger) func(next http.Handler) http.Handler {
 			defer func() {
 				// Логируем информацию о завершении запроса: статус, количество байтов и продолжительность.
 				entry.Info("request completed",
-					slog.Int("status", ww.Status()),            // Статус ответа.
-					slog.Int("bytes", ww.BytesWritten()),       // Количество отправленных байтов.
+					slog.Int("status", ww.Status()),                  // Статус ответа.
+					slog.Int("bytes", ww.BytesWritten()),             // Количество отправленных байтов.
 					slog.String("duration", time.Since(t1).String()), // Время выполнения запроса.
 				)
 			}()

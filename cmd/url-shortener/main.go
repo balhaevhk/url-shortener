@@ -8,6 +8,7 @@ import (
 	// Импортируем модуль конфигурации приложения
 	"url-shortener/internal/config"
 	// Импортируем middleware (промежуточный обработчик) для логирования HTTP-запросов
+	"url-shortener/internal/http-server/handlers/url/save"
 	mwLogger "url-shortener/internal/http-server/middleware/logger"
 	// Импортируем кастомный обработчик логирования slogpretty для красивого форматирования логов
 	"url-shortener/internal/lib/logger/handlers/slogpretty"
@@ -99,6 +100,7 @@ func main() {
 	// middleware.URLFormat – встроенный middleware, который позволяет работать с URL-форматами.
 	router.Use(middleware.URLFormat)
 
+	router.Post("/url", save.New(log, storage))
 	// TODO: run server
 
 }

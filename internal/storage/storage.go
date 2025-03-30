@@ -7,5 +7,6 @@ import "errors"
 // Определяем переменные для ошибок, которые могут возникнуть при работе с URL в базе данных.
 // ErrURLNotFound - ошибка, которая возникает, когда не удается найти URL по заданному псевдониму.
 var ErrURLNotFound = errors.New("url not found")
+
 // ErrURLExists - ошибка, которая возникает, если попытаться вставить URL с уже существующим псевдонимом.
 var ErrURLExists = errors.New("url already exists")

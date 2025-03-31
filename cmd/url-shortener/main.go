@@ -3,13 +3,18 @@ package main
 import (
 	// Пакет log/slog используется для логирования
 	"log/slog"
+	"net/http"
+
 	// Пакет os предоставляет функции для работы с операционной системой (например, чтение переменных окружения)
 	"os"
 	// Импортируем модуль конфигурации приложения
 	"url-shortener/internal/config"
 	// Импортируем middleware (промежуточный обработчик) для логирования HTTP-запросов
+	"url-shortener/internal/http-server/handlers/redirect"
+	"url-shortener/internal/http-server/handlers/url/delete"
 	"url-shortener/internal/http-server/handlers/url/save"
 	mwLogger "url-shortener/internal/http-server/middleware/logger"
+
 	// Импортируем кастомный обработчик логирования slogpretty для красивого форматирования логов
 	"url-shortener/internal/lib/logger/handlers/slogpretty"
 	// Импортируем вспомогательный пакет sl для работы с логами
@@ -48,7 +53,7 @@ func main() {
 	// Вызываем метод Info у объекта log.
 	// log.Info() – это метод логгера, который записывает информационное сообщение.
 	// slog.String("env", cfg.Env) – добавляет в лог строковый параметр "env" со значением из конфигурации.
-	log.Info("starting url-shortener", slog.String("env", cfg.Env))
+	log.Info("starting url-shortener", slog.String("env", cfg.Env), slog.String("version", "123"))
 
 	// Вызываем метод Debug у логгера log.
 	// log.Debug() записывает отладочное сообщение, но оно будет видно только если включён debug-уровень логирования.
@@ -100,8 +105,33 @@ func main() {
 	// middleware.URLFormat – встроенный middleware, который позволяет работать с URL-форматами.
 	router.Use(middleware.URLFormat)
 
-	router.Post("/url", save.New(log, storage))
+	router.Route("/url", func(r chi.Router) {
+		r.Use(middleware.BasicAuth("url-shortener", map[string]string{
+			cfg.Auth.User: cfg.Auth.Password, 
+		}))
+
+		r.Post("/", save.New(log, storage))
+		r.Delete("/{alias}", delete.New(log, storage))
+	})
+
+	router.Get("/{alias}", redirect.New(log, storage))
+
+	log.Info("starting server", slog.String("address", cfg.Address))
+
+	srv := &http.Server{
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+	}
+
 	// TODO: run server
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("failed to start server")
+	}
+
+	log.Error("server stopped")
 
 }
 

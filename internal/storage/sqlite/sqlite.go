@@ -132,3 +132,18 @@ func (s *Storage) GetURL(alias string) (string, error) {
 }
 
 // func (s *Storage) DeleteURL(alias string) error {
+	func (s *Storage) DeleteURL(alias string) (int64, error) {
+		const fn = "storage.sqlite.DeleteURL"
+	
+		result, err := s.db.Exec("DELETE FROM url WHERE alias = ?", alias)
+		if err != nil {
+			return 0, fmt.Errorf("%s: execute statement %w", fn, err)
+		}
+	
+		rowsAffected, err := result.RowsAffected() // Считаем сколько удалили
+		if err != nil {
+			return 0, fmt.Errorf("%s: get rows affected: %w", fn, err) // Возвращаем 0 и ошибку
+		}
+	
+		return rowsAffected, nil
+	}

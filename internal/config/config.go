@@ -27,15 +27,20 @@ type Config struct {
 	// HTTPServer - структура, содержащая конфигурацию для HTTP-сервера.
 	// В конфигурационном файле (YAML) и переменных окружения будет указано под полем "http_server".
 	// Эта структура содержит настройки для работы с сервером (например, адрес, таймауты и т.д.).
-	HTTPServer HTTPServer `yaml:"http_server"`
+	HTTPServer `yaml:"http_server"`
+	Auth        `yaml:"auth"`
 }
 
+type Auth struct {
+	User     string `yaml:"user" env:"AUTH_USER"`
+	Password string `yaml:"password" env:"AUTH_PASSWORD"`
+}
 // HTTPServer - структура для хранения конфигурации HTTP-сервера.
 // Включает параметры, такие как адрес, таймауты и другие настройки для работы с сервером.
 type HTTPServer struct {
-	// Adress - адрес, на котором будет слушать HTTP-сервер.
+	// Address - адрес, на котором будет слушать HTTP-сервер.
 	// По умолчанию указывается "localhost:8080". Это значение будет использовано, если в конфигурации или переменных окружения не указано другое.
-	Adress string `yaml:"address" env-default:"localhost:8080"`
+	Address string `yaml:"address" env-default:"localhost:8080"`
 
 	// Timeout - общий таймаут для запросов к серверу. Указывает максимальное время ожидания для ответа.
 	// По умолчанию установлено значение 4 секунды.
